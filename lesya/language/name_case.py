@@ -1,3 +1,4 @@
+import re
 from lesya.language.nc_core import NameCaseCore, NamePart
 from lesya.language.name_constants import NAMES, FEMALE_NAMES, LASTNAME_ENDINGS2, LASTNAME_ENDINGS3
 from lesya.language.case_helpers import CaseUA
@@ -12,10 +13,10 @@ class NameCaseUa(NameCaseCore):
         super().__init__()
         self.vowels = 'аеиоуіїєюя'
         self.consonant = "бвгджзйклмнпрстфхцчшщ"
-        self.shyplyachi = "жчшщ"
-        self.neshyplyachi = "бвгдзклмнпрстфхц"
-        self.myaki = 'ьюяєї'
-        self.gubni = 'мвпбф'
+        self.hissing = "жчшщ"
+        self.nonhissing = "бвгдзклмнпрстфхц"
+        self.soft = 'ьюяєї'
+        self.labial = 'мвпбф'
 
     @property
     def forms(self):
@@ -114,7 +115,7 @@ class NameCaseUa(NameCaseCore):
                 if self.working_word[-4:] in ('бідь', 'мінь'):
                     # заміна на -е-
                     base_word = base_word[:-2] + 'е' + base_word[-1]
-                elif self.working_word[-4:] in ('сіль'):
+                elif self.working_word[-4:] in ('сіль', 'двіг', 'цвіг'):
                     # не змінюється
                     pass
                 else:
@@ -148,7 +149,7 @@ class NameCaseUa(NameCaseCore):
                 self.word_forms(base_word, ['а', 'у', 'а', 'ем', 'еві', 'е'])
                 return True
             if group == 3:
-                if self.working_word[-2:] == 'ей' and self.working_word[-3] in self.gubni:
+                if self.working_word[-2:] == 'ей' and self.working_word[-3] in self.labial:
                     base_word = self.working_word[:-2] + '’'
                     self.word_forms(base_word, ['я', 'єві', 'я', 'єм', 'єві', 'ю'])
                     return True
@@ -179,23 +180,25 @@ class NameCaseUa(NameCaseCore):
         return False
 
     def male_rule5(self):
-        if self.working_word[-2:] in ['ий', 'ой']:
+        if self.working_word[-2:] in ('ий', 'ой'):
             self.word_forms(self.working_word, ['ого', 'ому', 'ого', 'им', 'ому', 'ий'], 2)
             return True
         return False
 
     def noun_is_not_declined(self):
         """ exclusions for words that are not declined """
-        if self.working_word[-1] in self.vowels and self.working_word[-2] in self.vowels:
+        if re.search(f"[{''.join(self.vowels)}]{{2}}$", self.working_word):
             return True
-        if self.working_word[-2:] in ('ьє', 'ні', 'лі', 'рі', 'ьї', 'те', 'се', 'же', 'хе',):
+        if re.search(r'(ьє|ні|лі|рі|ьї|те|се|же|хе|до|го|со|не|мі)$', self.working_word):
             return True
-        if self.working_word.lower() in ('педро', 'дюма', 'дідро', ):
+        if self.working_word.lower() in ('педро', 'дюма', 'дідро', 'джо', 'камю'):
+            return True
+        if self.working_word.lower() in ('ван', 'да', 'де', 'ді', 'дю', 'дер', 'ед', 'ель', 'ла', 'ле', 'фон', 'ібн'):
             return True
         return False
 
     def get_exclusions(self, base_word):
-        if base_word[-3] in self.gubni + "н" and sum([1 for ch in base_word if ch in self.vowels]) > 1:
+        if base_word[-3] in self.labial + "н" and sum([1 for ch in base_word if ch in self.vowels]) > 1:
             # Кравець, правдивець, але не Швець
             return base_word[:-2] + 'ц*'
         if base_word[-3:] == 'лец' and sum([1 for ch in base_word if ch in self.vowels]) > 1:
@@ -232,7 +235,7 @@ class NameCaseUa(NameCaseCore):
             duplicate = ''
             last = base_word[-1]
             last2 = base_word[-2]
-            if last in self.gubni and last2 in self.vowels:
+            if last in self.labial and last2 in self.vowels:
                 apostrof = '’'
             if last in 'дтзсцлн':
                 duplicate = last
@@ -266,9 +269,9 @@ class NameCaseUa(NameCaseCore):
         if stack:
             last = stack[- 1]
         base_word_end = base_word[-1]
-        if base_word_end in self.neshyplyachi and last not in self.myaki:
+        if base_word_end in self.nonhissing and last not in self.soft:
             return 1
-        elif base_word_end in self.shyplyachi and last not in self.myaki:
+        elif base_word_end in self.hissing and last not in self.soft:
             return 2
         else:
             return 3
@@ -290,7 +293,7 @@ class NameCaseUa(NameCaseCore):
         return self.rules_chain('female', [3, 1])
 
     def male_father_name(self):
-        if self.working_word[-2:] in ['ич', 'іч']:
+        if self.working_word[-2:] in ('ич', 'іч'):
             self.word_forms(self.working_word, ['а', 'у', 'а', 'ем', 'у', 'у'])
             return True
         return False
@@ -395,7 +398,7 @@ class Lesya:
     @property
     def vocative(self):
         return self._core[CaseUA.VOCATIVE]
-    
+
     def __getitem__(self, item):
         if not self._core.finished:
             return None
@@ -407,3 +410,6 @@ class Lesya:
             if item in CaseUA().all():
                 index = CaseUA().all().index(item)
                 return self[index]
+
+    def __repr__(self):
+        return self.nominative
