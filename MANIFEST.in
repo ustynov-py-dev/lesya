@@ -1,1 +1,1 @@
-include lesya/language/language_data/family_names.csv
+include lesya/language/data/family_names.pkl

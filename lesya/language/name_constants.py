@@ -79,7 +79,7 @@ FEMALE_NAMES = (
 'Яромира', 'Ярослава')
 
 file_path = 'family-names.pkl'
-with importlib.resources.open_binary('lesya.language.language_data', file_path) as f:
+with importlib.resources.open_binary('lesya.language.data', file_path) as f:
     lines = pickle.load(f)
 
 LASTNAME_ENDINGS2 = {l[-2:] for l in lines}
