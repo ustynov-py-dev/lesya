@@ -1,25 +1,25 @@
 # Lesya
 
-This is a simple Python oackage convertin Ukrainian personal names to Ukrainian cases ( _відмінки_ ): NOMINATIVE, GENITIVE, DATIVE, ACCUSATIVE, INSTRUMENTAL, PREPOSITIONAL,VOCATIVE_ ('називний', 'родовий', 'давальний', 'знахідний', 'орудний', 'місцевий', 'кличний'_)
+Lesya is a simple Python package for declining Ukrainian personal names into Ukrainian grammatical cases (_відмінки_): NOMINATIVE, GENITIVE, DATIVE, ACCUSATIVE, INSTRUMENTAL, PREPOSITIONAL, and VOCATIVE (_називний, родовий, давальний, знахідний, орудний, місцевий, кличний_).
 
 ## Usage example
 
-Most common usage is to convert a name to all cases:
+The most common usage is to convert a name into all cases:
 
 ```python
 from lesya import Lesya
 
-person = Lesya('Іван Сидоренко')
-print(person.nominative) # Іван Сидоренко
-print(person.genitive) # Івана Сидоренка
-print(person.dative) # Івану Сидоренку
-print(person.accusative) # Івана Сидоренка
-print(person.instrumental) # Іваном Сидоренком
-print(person.prepositional) # Івані Сидоренку
-print(person.vocative) # Іване Сидоренко
+person = Lesya('Леся Українка')
+print(person.nominative) # Леся Українка
+print(person.genitive) # Лесі Українки
+print(person.dative) # Лесі Українці
+print(person.accusative) # Лесю Українку
+print(person.instrumental) # Лесею Українкою
+print(person.prepositional) # Лесі Українці
+print(person.vocative) # Лесе Українко
 ```
 
-Also you may want to get a name in a specific case :
+You can also get a name in a specific case:
 
 ```python
 from lesya import Lesya
@@ -33,31 +33,32 @@ print(person['орудний']) # Тарасом Григоровичем Шев
 
 ## Double names support
 
-Lesya works well with doubled lastnames:
+Lesya works well with double last names:
     
 ```python
 from lesya import Lesya
 
 person = Lesya('Іван Семенович Нечуй-Левицький')
 print(person.forms)
-{'називний': 'Іван Семенович Нечуй-Левицький', 
- 'родовий': 'Івана Семеновича Нечуя-Левицького',
- 'давальний': 'Івану Семеновичу Нечуєві-Левицькому', 
- 'знахідний': 'Івана Семеновича Нечуя-Левицького',
- 'орудний': 'Іваном Семеновичем Нечуєм-Левицьким', 
- 'місцевий': 'Іванові Семеновичу Нечуєві-Левицькому',
- 'кличний': 'Іване Семеновичу Нечую-Левицький'}
+# Output:
+{
+    'називний': 'Іван Семенович Нечуй-Левицький', 
+    'родовий': 'Івана Семеновича Нечуя-Левицького', 
+    'давальний': 'Івану Семеновичу Нечуєві-Левицькому', 
+    'знахідний': 'Івана Семеновича Нечуя-Левицького', 
+    'орудний': 'Іваном Семеновичем Нечуєм-Левицьким', 
+    'місцевий': 'Іванові Семеновичу Нечуєві-Левицькому', 
+    'кличний': 'Іване Семеновичу Нечую-Левицький'
+}
 ```
 
-## forms attribute
+## `forms` attribute
 
-You can get all cases at once using `forms` attribute. It will return a dictionary with all cases, where keys are case names (ukrainian in lower case) and values are names in corresponding cases.
-
-
+You can get all cases at once using the forms attribute. It returns a dictionary where the keys are case names (in lowercase Ukrainian), and the values are the corresponding declined names.
 
 ## Foreign names support
 
-Lesya supports foreign names, but since it has no ML model to automatically detect the person gender, it will work better if you provide gender explicitly:
+Lesya supports foreign names. However, since it does not use an ML model to automatically detect a person's gender, it works better if you explicitly provide the gender:
 
 ```python
 from lesya import Lesya

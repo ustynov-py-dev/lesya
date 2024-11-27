@@ -372,7 +372,7 @@ class Lesya:
     def nominative(self):
         return self._core[CaseUA.NOMINATIVE]
 
-    # @property
+    @property
     def genitive(self):
         return self._core[CaseUA.GENITIVE]
 
@@ -394,7 +394,7 @@ class Lesya:
 
     @property
     def vocative(self):
-        return self.forms[CaseUA.VOCATIVE]
+        return self._core[CaseUA.VOCATIVE]
     
     def __getitem__(self, item):
         if not self._core.finished:
