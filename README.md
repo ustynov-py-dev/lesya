@@ -19,7 +19,15 @@ print(person.prepositional) # Лесі Українці
 print(person.vocative) # Лесе Українко
 ```
 
-You can also get a name in a specific case:
+When printing the `Lesya` object, you will get just nominative case:
+
+```python
+person = Lesya('Дмитро Андрійович Устинов')
+print(person) # Дмитро Андрійович Устинов
+```
+
+
+You can also get a name in a specific case with square brackets:
 
 ```python
 from lesya import Lesya

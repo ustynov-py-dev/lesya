@@ -134,16 +134,21 @@ class NameCaseUa(NameCaseCore):
                     self.word_forms(base_word, [last + 'а', last + 'у', last + 'а', last + 'им', last + 'у',
                                                 self.inverse_gk2(last) + 'е'], 1)
                     return True
-                elif self.working_word[-2:] == 'ін':
-                    self.word_forms(self.working_word, ['а', 'у', 'а', 'ом', 'у', 'е'])
+                elif self.working_word[-2:] in ('ін', 'ин'):
+                    self.word_forms(self.working_word, ['а', 'у', 'а', 'им', 'у', 'е'])
                     return True
                 else:
                     if self.working_word.lower() == 'пес':
                         base_word = 'пс'
                     if self.working_word[-3:] in ('ких', 'гих', 'чих', 'дих'):
                         return False
-                    self.word_forms(base_word, [last + 'а', last + 'у', last + 'а', last + 'ом', last + 'ові',
-                                                self.inverse_gk2(last) + 'е'], 1)
+                    if self.working_word[-2:] in ('ко'):
+                        vocative_end = 'ку'
+                    else:
+                        vocative_end = self.inverse_gk2(last) + 'е'
+                    endings = [last + 'а', last + 'у', last + 'а', last + 'ом', last + 'ові',
+                                                vocative_end]
+                    self.word_forms(base_word, endings, 1)
                     return True
             if group == 2:
                 self.word_forms(base_word, ['а', 'у', 'а', 'ем', 'еві', 'е'])
