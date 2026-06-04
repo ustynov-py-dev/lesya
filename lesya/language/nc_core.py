@@ -68,6 +68,16 @@ class NameCaseCore:
                 return True
         return False
 
+    @staticmethod
+    def canonical_case(word):
+        """Normalize a single word to Title case for rule matching.
+
+        Lowercases the body and capitalizes the first letter so that ALL-CAPS
+        or lowercase input matches the same declension rules as natural-case
+        input. The caller restores the original capitalization via the mask.
+        """
+        return word[:1].upper() + word[1:].lower() if word else word
+
     def word_forms(self, word, endings, replace_last=0):
         result = [self.working_word]
         # word = NCLStr.substr(word, 0, len(word) - replace_last)
@@ -193,7 +203,12 @@ class NameCaseCore:
                 else:
                     is_norm_rules = False
 
-            self.working_word = cur_word
+            # Declension rules are written for natural (Title) case: their tail
+            # checks compare against lowercase letter sets while their exclusion
+            # lists use Title-case literals. Normalize so ALL-CAPS / lowercase
+            # inputs hit the same rules; the original capitalization is restored
+            # afterwards by the letter mask in NCLNameCaseWord.set_name_cases.
+            self.working_word = self.canonical_case(cur_word)
 
             if is_norm_rules and getattr(self, method)():
                 result_tmp = self.last_result

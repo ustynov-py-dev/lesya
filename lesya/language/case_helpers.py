@@ -86,16 +86,15 @@ class NCLNameCaseWord:
         """ Convert the word to the capital / small letter format according to its mask
         """
         mask_length = len(self.letter_mask)
+        tail_mask = self.letter_mask[-1] if mask_length else 'x'
         for i, case in enumerate(self.name_cases):
-            case_length = len(case)
-            max_len = min(case_length, mask_length)
             new_case = ''
-            for j in range(max_len):
-                letter = case[j]
-                if self.letter_mask[j] == 'X':
-                    letter = letter.upper()
-                new_case += letter
-            new_case += case[max_len:case_length]
+            for j, letter in enumerate(case):
+                # An inflected form can be longer than the original word; keep
+                # extending with the last mask symbol so an ALL-CAPS surname
+                # keeps its ending uppercase (АТАБАЄВ -> АТАБАЄВИМ).
+                mask = self.letter_mask[j] if j < mask_length else tail_mask
+                new_case += letter.upper() if mask == 'X' else letter
             self.name_cases[i] = new_case
 
     def set_name_cases(self, name_cases, is_return_mask=True):

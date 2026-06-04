@@ -37,6 +37,17 @@ class TestUkrainianNameDeclension(unittest.TestCase):
         self.assertEqual(person.prepositional, 'Іванові Петровичу Франкові')
         self.assertEqual(person.vocative, 'Іване Петровичу Франку')
 
+    def test_capitalization_variants(self):
+        # Declension must be case-insensitive: ALL-CAPS surnames (common in
+        # official documents) and lowercase input decline like Title case,
+        # with the original capitalization preserved in the output.
+        self.assertEqual(Lesya('Олексій АТАБАЄВ').instrumental, 'Олексієм АТАБАЄВИМ')
+        self.assertEqual(Lesya('Тарас ШЕВЧЕНКО').genitive, 'Тараса ШЕВЧЕНКА')
+        self.assertEqual(Lesya('ТАРАС ШЕВЧЕНКО').instrumental, 'ТАРАСОМ ШЕВЧЕНКОМ')
+        self.assertEqual(Lesya('тарас шевченко').instrumental, 'тарасом шевченком')
+        # Title case stays identical to the canonical result.
+        self.assertEqual(Lesya('Тарас Шевченко').instrumental, 'Тарасом Шевченком')
+
     @parameterized.expand([
         ("Іван Семенович Нечуй-Левицький",  # Nominative хто
          "Івана Семеновича Нечуя-Левицького",  # Genitive кого
